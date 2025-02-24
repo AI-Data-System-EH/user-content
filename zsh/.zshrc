@@ -12,40 +12,40 @@ export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME="powerlevel10k/powerlevel10k"
 
 plugins=(
-    ######################################
-    history
-    jsontools
-    safe-paste
-    copypath
-    ######################################
-    command-not-found
-    sudo
-    systemadmin
-    ssh-agent
-    ######################################
-    colorize
-    themes
-    ######################################
-    # last-working-dir
-    # per-directory-history
-    ######################################
-    zsh-completions
-    zsh-interactive-cd
-    zsh-navigation-tools
-    zsh-autosuggestions
-    zsh-syntax-highlighting
-    fast-syntax-highlighting
-    zsh-history-substring-search # load after zsh-syntax-highlighting
-    ######################################
-    fzf
-    poetry
-    ######################################
-    auto-color-ls
-    autoupdate
-    ######################################
-    zsh-bat
-    zsh-safe-rm
-    ######################################
+  ######################################
+  history
+  jsontools
+  safe-paste
+  copypath
+  ######################################
+  command-not-found
+  sudo
+  systemadmin
+  ssh-agent
+  ######################################
+  colorize
+  themes
+  ######################################
+  # last-working-dir
+  # per-directory-history
+  ######################################
+  zsh-completions
+  zsh-interactive-cd
+  zsh-navigation-tools
+  zsh-autosuggestions
+  zsh-syntax-highlighting
+  fast-syntax-highlighting
+  zsh-history-substring-search # load after zsh-syntax-highlighting
+  ######################################
+  fzf
+  poetry
+  ######################################
+  auto-color-ls
+  autoupdate
+  ######################################
+  zsh-bat
+  zsh-safe-rm
+  ######################################
 )
 
 # zsh-completions
@@ -55,8 +55,8 @@ source $ZSH/oh-my-zsh.sh
 
 # User configuration
 # You may need to manually set your language environment
-export LANG=ko_KR.UTF-8
-export LC_MESSAGES=POSIX
+# export LANG=ko_KR.UTF-8
+# export LC_MESSAGES=POSIX
 
 # Preferred editor for local and remote sessions
 # if [[ -n $SSH_CONNECTION ]]; then
@@ -68,16 +68,24 @@ export LC_MESSAGES=POSIX
 # Example aliases
 alias zshconfig="nano ~/.zshrc"
 alias ohmyzsh="nano ~/.oh-my-zsh"
+alias p10kconfig="nano ~/.p10k.zsh"
 
 ##############################################################################################
-# Plugins
+# Plugin Configuration
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+[ -f ~/.p10k.zsh ] && source ~/.p10k.zsh
+
+# fzf key bindings
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-# colorls
-source $(dirname $(gem which colorls))/tab_complete.sh
+# Zsh local configuration (for custom aliases, functions, etc.)
+# If you want to use your own additional configuration that is not included in this file,
+# please create a file named ~/.zshrc.local and write your configuration there.
+[ -f ~/.zshrc.local ] && source ~/.zshrc.local
+
+# Colorls (Ruby gem)
+[ -f $(gem which colorls) ] && source $(dirname $(gem which colorls))/tab_complete.sh
 alias lc='colorls -lA --sd'
 alias ls='colorls'
 
@@ -106,7 +114,7 @@ history-delete() {
         fzf --multi --bind 'ctrl-a:toggle-all,enter:become:echo {+f1}' --header="Tab: select, Ctrl+a: toggle all, Enter: confirm, Esc: quit" --prompt="Search: " --no-sort --cycle
       )
   if [ -n "$selection" ]; then
-    while IFS= read -r line; do ignore+=("${(b)history[$line]}"); done < "$selection"
+    while IFS= read -r line; do ignore+=("${(b)history[$line]}"); done <<< "$selection"
     HISTORY_IGNORE="(${(j:|:)ignore})"
     # Write history excluding lines that match `$HISTORY_IGNORE` and read new history.
     fc -W && fc -p "$HISTFILE"

@@ -84,7 +84,7 @@
   # The left end of left prompt.
   typeset -g POWERLEVEL9K_LEFT_PROMPT_FIRST_SEGMENT_START_SYMBOL='\uE0B6'
   # The right end of left prompt.
-  typeset -g POWERLEVEL9K_LEFT_PROMPT_LAST_SEGMENT_END_SYMBOL='\uE0B4'
+  # typeset -g POWERLEVEL9K_LEFT_PROMPT_LAST_SEGMENT_END_SYMBOL='\uE0B4'
   # The left end of right prompt.
   typeset -g POWERLEVEL9K_RIGHT_PROMPT_FIRST_SEGMENT_START_SYMBOL=''
   # The right end of right prompt.
@@ -95,6 +95,9 @@
   typeset -g POWERLEVEL9K_CONTEXT_LEFT_PROMPT_FIRST_SEGMENT_START_SYMBOL=
   # typeset -g POWERLEVEL9K_DIR_LEFT_PROMPT_FIRST_SEGMENT_START_SYMBOL='\uE0B6' # left half circle thick
   # typeset -g POWERLEVEL9K_DIR_LEFT_PROMPT_LAST_SEGMENT_END_SYMBOL='\uE0B4'    # right half circle thick
+
+  # typeset -g POWERLEVEL9K_DIR_{LEFT,RIGHT}_{LEFT,RIGHT}_WHITESPACE=' '
+  typeset -g POWERLEVEL9K_DIR_{LEFT,RIGHT}_SEGMENT_SEPARATOR='\uE0B4 '
 
   # When set to true, icons appear before content on both sides of the prompt. When set
   # to false, icons go after content. If empty or not set, icons go before content in the left
@@ -192,10 +195,7 @@
   # Current directory background color.
   typeset -g POWERLEVEL9K_DIR_BACKGROUND=7
 
-  # typeset -g POWERLEVEL9K_DIR_{LEFT,RIGHT}_{LEFT,RIGHT}_WHITESPACE=' '
-  typeset -g POWERLEVEL9K_DIR_{LEFT,RIGHT}_SEGMENT_SEPARATOR='\uE0B4 '
-
-  # typeset -g POWERLEVEL9K_HOME_ICON=' '  # nf-fa-home
+  # typeset -g POWERLEVEL9K_HOME_ICON=''   # nf-fa-home
   # typeset -g POWERLEVEL9K_HOME_SUB_ICON='~'
   # typeset -g POWERLEVEL9K_FOLDER_ICON='' # nf-fa-folder
   # typeset -g POWERLEVEL9K_ETC_ICON=''    # nf-fa-cog
@@ -651,14 +651,14 @@
   # Context color when running with privileges.
   typeset -g POWERLEVEL9K_CONTEXT_ROOT_FOREGROUND=166
   # Context color in SSH without privileges.
-  typeset -g POWERLEVEL9K_CONTEXT_{REMOTE,REMOTE_SUDO}_FOREGROUND=40
+  typeset -g POWERLEVEL9K_CONTEXT_{REMOTE,REMOTE_SUDO}_FOREGROUND=8
   # Default context color (no privileges, no SSH).
   typeset -g POWERLEVEL9K_CONTEXT_FOREGROUND=8
 
   # Context format when running with privileges: bold user@hostname.
   typeset -g POWERLEVEL9K_CONTEXT_ROOT_TEMPLATE='%B%n@%m'
   # Context format when in SSH without privileges: user@hostname.
-  typeset -g POWERLEVEL9K_CONTEXT_{REMOTE,REMOTE_SUDO}_TEMPLATE='(remote) %n@%m'
+  typeset -g POWERLEVEL9K_CONTEXT_{REMOTE,REMOTE_SUDO}_TEMPLATE='%F{40}(%m)%F{8} %n'
   # Default context format (no privileges, no SSH): user@hostname.
   typeset -g POWERLEVEL9K_CONTEXT_TEMPLATE='%n'
 
@@ -907,10 +907,6 @@
   typeset -g POWERLEVEL9K_TIME_VISUAL_IDENTIFIER_EXPANSION=
   # Custom prefix.
   # typeset -g POWERLEVEL9K_TIME_PREFIX='%fat '
-
-  # typeset -g POWERLEVEL9K_TIME_RIGHT_PROMPT_LAST_SEGMENT_END_SYMBOL='\uE0B4'  # right half circle thick
-  # typeset -g POWERLEVEL9K_TIME_LAST_SEGMENT_END_SYMBOL='\uE0B4'  # right half circle thick
-  # typeset -g POWERLEVEL9K_TIME_RIGHT_SEGMENT_SEPARATOR='\uE0B6'  # left half circle thick
 
   # Example of a user-defined prompt segment. Function prompt_example will be called on every
   # prompt if `example` prompt segment is added to POWERLEVEL9K_LEFT_PROMPT_ELEMENTS or
