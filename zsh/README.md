@@ -6,7 +6,7 @@
 | 항목                      | 설명                           | 비활성화 옵션 |
 | ------------------------- | ------------------------------ | ------------- |
 | Oh-My-Zsh & Powerlevel10k | Zsh 플러그인 설치 및 테마 설정 | `--no-omz`    |
-| SSH Key                   | SSH 키 생성 및 GitHub에 등록   | `--no-ssh`    |
+| SSH Key                   | SSH 키 생성               | `--no-ssh`    |
 | GitHub CLI                | GitHub CLI 로그인 및 키 등록   | `--no-gh`     |
 | Git                       | Git 설정 (Verified Commit)     | `--no-git`    |
 
