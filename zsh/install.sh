@@ -2,7 +2,11 @@
 
 # File: zsh/install.sh
 
-# sh -c "./zsh/install.sh --reinstall --gh-token ~/mytoken.txt"
+# /bin/bash -c "./zsh/install.sh --reinstall --gh-token ~/mytoken.txt"
+
+# /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/AI-Data-system-EH/user-content/main/zsh/install.sh)" -- --no-gh
+# /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/AI-Data-system-EH/user-content/main/zsh/install.sh)" -- --gh-token <token>
+# /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/AI-Data-system-EH/user-content/main/zsh/install.sh)" -- --install-deps --gh-token <token>
 
 # Useradd example
 # with permission
@@ -18,7 +22,7 @@
 # --no-git          : Skip Git configuration
 # --no-gh           : Skip GitHub CLI configuration
 # --ssh-key-path    : SSH key path (default: ~/.ssh/id_ed25519) (no .pub extension)
-# --gh-token        : GitHub CLI Personal Access Token (classic). (Scope: repo, read:org, gist, user, admin:public_key, admin:gpg_key, admin:ssh_signing_key)
+# --gh-token        : GitHub CLI Personal Access Token (classic). (Scope: repo, read:org, gist, user, admin:public_key, admin:ssh_signing_key)
 # --gh-skip-ssh-key : Skip adding SSH key to GitHub
 # --install-deps    : Install system package dependencies (requires permission)
 # --help, -h        : Show help message
@@ -428,10 +432,6 @@ if [ "$INSTALL_GH" = true ]; then
 
     # Configure GitHub CLI
     # https://cli.github.com/manual/gh_auth_login
-    # Get token content from passed argument
-    # sample input types
-    # $GH_TOKEN=~/mytoken.txt
-    # $GH_TOKEN=ghp_xhX4thisisexamplegithubpatclassictokenL3i6
 
     # Get token string from file if $GH_TOKEN provided as file path
     if [ -f "$GH_TOKEN" ]; then
@@ -441,7 +441,7 @@ if [ "$INSTALL_GH" = true ]; then
     if [ -z "$GH_TOKEN" ]; then
         colorize error "GitHub CLI requires a Personal Access Token (classic) to authenticate."
         colorize log "Please provide a Personal Access Token (classic) with the following scopes:"
-        colorize log "    repo, read:org, gist, user, admin:public_key, admin:gpg_key, admin:ssh_signing_key"
+        colorize log "    repo, read:org, gist, user, admin:public_key, admin:ssh_signing_key"
         colorize info "Go to https://github.com/settings/tokens to create a token."
     else
         colorize info "Configuring GitHub CLI..."

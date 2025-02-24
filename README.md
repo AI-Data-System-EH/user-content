@@ -27,5 +27,5 @@ curl -fsSL https://raw.githubusercontent.com/AI-Data-system-EH/user-content/main
 ## motd
 
 ```bash
-sudo curl -fsSL https://raw.githubusercontent.com/AI-Data-system-EH/user-content/main/motd -o /etc/motd
+sudo curl -fsSL https://raw.githubusercontent.com/AI-Data-system-EH/user-content/main/extra/motd -o /etc/motd
 ```
