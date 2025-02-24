@@ -4,6 +4,7 @@
 
 # /bin/bash -c "./zsh/install.sh --reinstall --gh-token ~/mytoken.txt"
 
+# /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/AI-Data-system-EH/user-content/main/zsh/install.sh)" -- --deps-only
 # /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/AI-Data-system-EH/user-content/main/zsh/install.sh)" -- --no-gh
 # /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/AI-Data-system-EH/user-content/main/zsh/install.sh)" -- --gh-token <token>
 # /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/AI-Data-system-EH/user-content/main/zsh/install.sh)" -- --install-deps --gh-token <token>
@@ -15,19 +16,20 @@
 # sudo useradd -m -s /bin/bash <username>
 
 # Arguments
-# --username        : GitHub username
-# --email           : GitHub email (ID+USERNAME@users.noreply.github.com)
-# --no-omz          : Skip Oh-My-Zsh installation
-# --no-ssh          : Skip SSH key generation
-# --no-git          : Skip Git configuration
-# --no-gh           : Skip GitHub CLI configuration
-# --ssh-key-path    : SSH key path (default: ~/.ssh/id_ed25519) (no .pub extension)
-# --gh-token        : GitHub CLI Personal Access Token (classic). (Scope: repo, read:org, gist, user, admin:public_key, admin:ssh_signing_key)
-# --gh-skip-ssh-key : Skip adding SSH key to GitHub
-# --install-deps    : Install system package dependencies (requires permission)
-# --help, -h        : Show help message
-# --yes, -y         : Skip user confirmation
-# --reinstall       : Reinstall all configurations
+# --username          : GitHub username
+# --email             : GitHub email (ID+USERNAME@users.noreply.github.com)
+# --no-omz | --no-zsh : Skip Oh-My-Zsh installation
+# --no-ssh            : Skip SSH key generation
+# --no-git            : Skip Git configuration
+# --no-gh             : Skip GitHub CLI configuration
+# --ssh-key-path      : SSH key path (default: ~/.ssh/id_ed25519) (no .pub extension)
+# --gh-token          : GitHub CLI Personal Access Token (classic). (Scope: repo, read:org, gist, user, admin:public_key, admin:ssh_signing_key)
+# --gh-skip-ssh-key   : Skip adding SSH key to GitHub
+# --install-deps      : Install system package dependencies (requires permission)
+# --deps-only         : Install system package dependencies only (no user-specific configurations)
+# --help, -h          : Show help message
+# --yes, -y           : Skip user confirmation
+# --reinstall         : Reinstall all configurations
 
 ################################# Colorize #####################################
 # pretty print
@@ -76,7 +78,7 @@ help() {
     echo "Options:"
     echo "  --username <username>    : Git username (fetch from GitHub if not provided)"
     echo "  --email <email>          : Git email (fetch from GitHub if not provided)"
-    echo "  --no-omz                 : Skip Oh-My-Zsh installation"
+    echo "  --no-omz | --no-zsh      : Skip Oh-My-Zsh installation"
     echo "  --no-ssh                 : Skip SSH key generation"
     echo "  --no-git                 : Skip Git configuration"
     echo "  --no-gh                  : Skip GitHub CLI configuration"
@@ -84,6 +86,7 @@ help() {
     echo "  --gh-token <token>       : GitHub CLI Personal Access Token (classic) (file path or token string)"
     echo "  --gh-skip-ssh-key        : Skip adding SSH key to GitHub"
     echo "  --install-deps           : Install system package dependencies (requires permission)"
+    echo "  --deps-only              : Install system package dependencies only (no user-specific configurations)"
     echo "  --help, -h               : Show help message"
     echo "  --yes, -y                : Skip user confirmation"
     echo "  --reinstall              : Reinstall all configurations"
@@ -102,6 +105,7 @@ INSTALL_GH=true
 
 USER_HOME=$(eval echo ~$(whoami))
 INSTALL_DEPS=false
+DEPS_ONLY=false
 SKIP_CONFIRM=false
 REINSTALL=false
 
@@ -138,7 +142,7 @@ while [ $# -gt 0 ]; do
         GIT_EMAIL="${1#--email=}"
         shift
         ;;
-    --no-omz)
+    --no-omz | --no-zsh)
         INSTALL_OMZ=false
         shift
         ;;
@@ -182,6 +186,11 @@ while [ $# -gt 0 ]; do
         INSTALL_DEPS=true
         shift
         ;;
+    --deps-only)
+        DEPS_ONLY=true
+        INSTALL_DEPS=true
+        shift
+        ;;
     --reinstall)
         REINSTALL=true
         shift
@@ -202,7 +211,18 @@ if [[ "$(uname)" != "Linux" && "$(uname)" != "Darwin" ]]; then
     exit 1
 fi
 
+# Check sudo command
+if [ "$INSTALL_DEPS" = true ] && ! command -v sudo &>/dev/null; then
+    colorize error "sudo command not found. Aborting."
+    colorize info "Please install sudo first and run the script again."
+    exit 1
+fi
+
 SSH_KEY_PATH=$(eval echo $SSH_KEY_PATH)
+
+if [ "$INSTALL_GH" = false ]; then
+    GH_SKIP_SSH_KEY=true
+fi
 
 # Check arguments
 colorize main "CHECK YOUR INSTALLATION"
@@ -213,21 +233,28 @@ colorize log "Current User : $(whoami)"
 colorize log "User home    : $USER_HOME"
 colorize log "-----------------------------------------------"
 colorize log "Skip install confirm        : $SKIP_CONFIRM"
-colorize log "Force reinstall             : $REINSTALL"
 colorize log "Install System Dependencies : $INSTALL_DEPS"
+colorize log "Install Dependencies Only   : $DEPS_ONLY"
 colorize log "-----------------------------------------------"
-colorize log "Git User     : ${GIT_USERNAME:-"Not provided"}"
-colorize log "Git Email    : ${GIT_EMAIL:-"Not provided"}"
-colorize log "-----------------------------------------------"
-colorize log "SSH key path : $SSH_KEY_PATH"
-colorize log "GitHub Token : $([ -n "$GH_TOKEN" ] && echo 'Provided' || echo 'Not provided')"
-colorize log "SSH key add to GitHub  : $([ "$GH_SKIP_SSH_KEY" = false ] && echo 'Yes' || echo 'No')"
-colorize log "-----------------------------------------------"
-colorize log "Install Oh-My-Zsh   : $INSTALL_OMZ"
-colorize log "Generate SSH key    : $INSTALL_SSH"
-colorize log "Install GitHub CLI  : $INSTALL_GH"
-colorize log "Configure Git       : $INSTALL_GIT"
-colorize log "-----------------------------------------------"
+if [ $DEPS_ONLY = true ]; then
+    colorize log "Install zsh          : $INSTALL_OMZ"
+    colorize log "Install GitHub CLI   : $INSTALL_GH"
+    colorize log "-----------------------------------------------"
+else
+    colorize log "Git User     : ${GIT_USERNAME:-"Not provided"}"
+    colorize log "Git Email    : ${GIT_EMAIL:-"Not provided"}"
+    colorize log "-----------------------------------------------"
+    colorize log "SSH key path : $SSH_KEY_PATH"
+    colorize log "GitHub Token : $([ -n "$GH_TOKEN" ] && echo 'Provided' || echo 'Not provided')"
+    colorize log "SSH key add to GitHub  : $([ "$GH_SKIP_SSH_KEY" = true ] && echo 'No' || echo 'Yes')"
+    colorize log "-----------------------------------------------"
+    colorize log "Force reinstall      : $REINSTALL"
+    colorize log "Install Oh-My-Zsh    : $INSTALL_OMZ"
+    colorize log "Generate SSH key     : $INSTALL_SSH"
+    colorize log "Configure GitHub CLI : $INSTALL_GH"
+    colorize log "Configure Git        : $INSTALL_GIT"
+    colorize log "-----------------------------------------------"
+fi
 
 # Check environment variables
 colorize main "LOCAL ENVIRONMENT VARIABLES"
@@ -252,22 +279,6 @@ if [ "$SKIP_CONFIRM" = false ]; then
     fi
 fi
 
-################# Install Script Dependencies (with sudo) ######################
-# sudo, ssh-keygen, curl, jq
-if ! command -v ssh-keygen &>/dev/null || ! command -v curl &>/dev/null || ! command -v jq &>/dev/null; then
-    colorize warning "Script required commands are missing. (ssh-keygen, curl, jq)"
-    colorize log "Run the following command to install the required packages:"
-    if [ "$(uname)" = "Linux" ]; then
-        colorize log "    sudo apt-get update && sudo apt-get install -y curl openssh-client jq"
-    elif [ "$(uname)" = "Darwin" ]; then
-        colorize log "    brew install curl openssh jq"
-    fi
-
-    colorize error "Please install the required commands before running this script."
-    colorize info "If you don't have sudo permission, please contact your system administrator."
-    exit 1
-fi
-
 ################### Install System Dependencies (with sudo) ####################
 if [ "$INSTALL_DEPS" = true ]; then
     colorize main "Install: System Dependencies (with sudo)"
@@ -275,26 +286,29 @@ if [ "$INSTALL_DEPS" = true ]; then
     # Check sudo permission (passwd)
     if ! sudo -v; then
         colorize warning "$(whoami) does not have sudo permission."
-        colorize info "Run script as admin user or remove '--install-deps' flag."
+        colorize info "Run script as admin user or remove '--install-deps' or '--deps-only' flag."
+        colorize info "If you don't have sudo permission, please contact your system administrator."
 
         colorize error "You must have sudo privileges to install dependencies."
         exit 1
     fi
 
-    # Install dependencies based on OS
+    # Basic dependencies (for script)
     if [ "$(uname)" = "Linux" ]; then
         colorize info "[apt] Installing dependencies..."
+        sudo apt-get update && sudo apt-get install -y curl openssh-client jq wget git --no-install-recommends
 
-        # Update package list and install dependencies
-        sudo apt-get update
-        sudo apt-get install -y wget git zsh nano --no-install-recommends
+        # Install zsh & ruby for colorls
+        if [ "$INSTALL_OMZ" = true ]; then
+            sudo apt-get install -y zsh nano build-essential ruby-dev --no-install-recommends
+            sudo gem install colorls
+            gem cleanup
+        fi
 
-        # Install ruby for colorls
-        sudo apt-get install -y build-essential ruby-dev --no-install-recommends
-        sudo gem install colorls
-        gem cleanup
+        colorize success "[apt] Dependencies installed successfully."
 
     elif [ "$(uname)" = "Darwin" ]; then
+        # Homebrew does not recommend running as sudo
         colorize info "[brew] Installing dependencies..."
 
         # Install Homebrew
@@ -307,15 +321,47 @@ if [ "$INSTALL_DEPS" = true ]; then
         fi
 
         # Install dependencies
-        brew install wget git zsh nano
+        brew install curl openssh jq wget git
 
         # Install ruby for colorls
-        brew install ruby
-        gem install colorls
-        gem cleanup
+        if [ "$INSTALL_OMZ" = true ]; then
+            brew install zsh nano ruby
+            gem install colorls
+            gem cleanup
+        fi
+
+        colorize success "[brew] Dependencies installed successfully."
     fi
 
-    colorize success "Dependencies installed successfully."
+    # gh cli installation executes only if gh is not installed
+    if ! command -v gh &>/dev/null && [ "$INSTALL_GH" = true ]; then
+        colorize info "Installing GitHub CLI..."
+
+        # Install GitHub CLI based on OS
+        if [ "$(uname)" = "Darwin" ]; then
+            (command -v brew >/dev/null || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)") &&
+                brew install gh
+        elif [ "$(uname)" = "Linux" ]; then
+            # https://github.com/cli/cli/blob/trunk/docs/install_linux.md#official-sources
+            (type -p wget >/dev/null || (sudo apt-get update && sudo apt-get install wget -y)) &&
+                sudo mkdir -p -m 755 /etc/apt/keyrings &&
+                out=$(mktemp) && wget -nv -O$out https://cli.github.com/packages/githubcli-archive-keyring.gpg &&
+                cat $out | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg >/dev/null &&
+                sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg &&
+                echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list >/dev/null &&
+                sudo apt-get update &&
+                sudo apt-get install gh -y
+        fi
+        colorize success "GitHub CLI installed successfully."
+    fi
+
+fi
+
+if [ "$DEPS_ONLY" = true ]; then
+    colorize main "Dependencies Installed."
+    colorize info "Please run the script with flags to complete the user installation."
+    colorize log "We recommend running the script as a regular user without '--install-deps' or '--deps-only' flag."
+    exit 0
 fi
 
 ############################ Install Oh-My-Zsh #################################
@@ -375,7 +421,10 @@ if [ "$INSTALL_SSH" = true ]; then
 
     if ! [ -f "$SSH_KEY_PATH" ] || [ "$REINSTALL" = true ]; then
         # Generate SSH key (will overwrite existing key, no prompt)
-        rm -f "$SSH_KEY_PATH" "$SSH_KEY_PATH.pub"
+        # rm -f "$SSH_KEY_PATH" "$SSH_KEY_PATH.pub"
+        mv "$SSH_KEY_PATH" "$SSH_KEY_PATH.bak" >/dev/null 2>&1
+        mv "$SSH_KEY_PATH.pub" "$SSH_KEY_PATH.pub.bak" >/dev/null 2>&1
+
         ssh-keygen -t ed25519 -f "$SSH_KEY_PATH" -q -N "" >/dev/null 2>&1
         colorize success "SSH key generated successfully."
 
@@ -399,36 +448,6 @@ fi
 ########################### Install GitHub CLI #################################
 if [ "$INSTALL_GH" = true ]; then
     colorize main "Install: GitHub CLI"
-
-    # gh cli installation executes only if gh is not installed and --install-deps flag is passed
-    if ! command -v gh &>/dev/null && [ "$INSTALL_DEPS" = true ]; then
-
-        # Check sudo permission (passwd)
-        if ! sudo -v; then
-            colorize warning "$(whoami) does not have sudo permission."
-            colorize info "Run script as admin user or remove '--install-deps' flag."
-
-            colorize error "You must have sudo privileges to install dependencies."
-            exit 1
-        fi
-
-        # Install GitHub CLI based on OS
-        if [ "$(uname)" = "Darwin" ]; then
-            (command -v brew >/dev/null || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)") &&
-                brew install gh
-        elif [ "$(uname)" = "Linux" ]; then
-            # https://github.com/cli/cli/blob/trunk/docs/install_linux.md#official-sources
-            (type -p wget >/dev/null || (sudo apt update && sudo apt-get install wget -y)) &&
-                sudo mkdir -p -m 755 /etc/apt/keyrings &&
-                out=$(mktemp) && wget -nv -O$out https://cli.github.com/packages/githubcli-archive-keyring.gpg &&
-                cat $out | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg >/dev/null &&
-                sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg &&
-                echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list >/dev/null &&
-                sudo apt update &&
-                sudo apt install gh -y
-        fi
-        colorize success "GitHub CLI installed successfully."
-    fi
 
     # Configure GitHub CLI
     # https://cli.github.com/manual/gh_auth_login

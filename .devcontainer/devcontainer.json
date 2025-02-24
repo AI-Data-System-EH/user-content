@@ -1,6 +1,7 @@
 {
     "name": "Ubuntu:latest",
     "image": "ubuntu:latest",
+    "postCreateCommand": "apt-get update && apt-get install -y sudo",
     "customizations": {
         "vscode": {
             "extensions": [
