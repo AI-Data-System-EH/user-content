@@ -111,7 +111,7 @@ history-delete() {
   fc -pa "$HISTFILE"
   selection=$(fc -rl 1 |
         awk '{ cmd=$0; sub(/^[ \t]*[0-9]+\**[ \t]+/, "", cmd); if (!seen[cmd]++)  print $0}' |
-        fzf --multi --bind 'enter:become:echo {+f1}' --header="Tab: select, Ctrl+a: toggle all, Enter: confirm, Esc: quit" --prompt="Search: " --no-sort --cycle
+        fzf --multi --bind 'enter:become:echo {+f1}' --header="Tab: select, Enter: confirm, Esc: quit" --prompt="Search: " --no-sort --cycle
       )
   if [ -n "$selection" ]; then
     while IFS= read -r line; do ignore+=("${(b)history[$line]}"); done < "$selection"
