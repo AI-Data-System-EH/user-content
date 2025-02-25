@@ -248,11 +248,12 @@ else
     colorize log "GitHub Token : $([ -n "$GH_TOKEN" ] && echo 'Provided' || echo 'Not provided')"
     colorize log "SSH key add to GitHub  : $([ "$GH_SKIP_SSH_KEY" = true ] && echo 'No' || echo 'Yes')"
     colorize log "-----------------------------------------------"
-    colorize log "Force reinstall      : $REINSTALL"
     colorize log "Install Oh-My-Zsh    : $INSTALL_OMZ"
     colorize log "Generate SSH key     : $INSTALL_SSH"
     colorize log "Configure GitHub CLI : $INSTALL_GH"
     colorize log "Configure Git        : $INSTALL_GIT"
+    colorize log "-----------------------------------------------"
+    colorize log "Force reinstall      : $REINSTALL"
     colorize log "-----------------------------------------------"
 fi
 
@@ -388,13 +389,13 @@ if [ "$INSTALL_OMZ" = true ]; then
         colorize log "Oh-My-Zsh installation completed."
 
         # Install Powerlevel10k theme and plugins
-        git clone https://github.com/romkatv/powerlevel10k ${ZSH_CUSTOM:-$USER_HOME/.oh-my-zsh/custom}/themes/powerlevel10k
+        git clone --depth=1 https://github.com/romkatv/powerlevel10k ${ZSH_CUSTOM:-$USER_HOME/.oh-my-zsh/custom}/themes/powerlevel10k
         git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-$USER_HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
         git clone https://github.com/zsh-users/zsh-syntax-highlighting ${ZSH_CUSTOM:-$USER_HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
         git clone https://github.com/zdharma-continuum/fast-syntax-highlighting ${ZSH_CUSTOM:-$USER_HOME/.oh-my-zsh/custom}/plugins/fast-syntax-highlighting
         git clone https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:-$USER_HOME/.oh-my-zsh/custom}/plugins/zsh-completions
         git clone https://github.com/zsh-users/zsh-history-substring-search ${ZSH_CUSTOM:-$USER_HOME/.oh-my-zsh/custom}/plugins/zsh-history-substring-search
-        git clone https://github.com/mattmc3/zsh-safe-rm ${ZSH_CUSTOM:-$USER_HOME/.oh-my-zsh/custom}/plugins/zsh-safe-rm
+        git clone --recursive --depth 1 https://github.com/mattmc3/zsh-safe-rm ${ZSH_CUSTOM:-$USER_HOME/.oh-my-zsh/custom}/plugins/zsh-safe-rm
         git clone https://github.com/fdellwing/zsh-bat ${ZSH_CUSTOM:-$USER_HOME/.oh-my-zsh/custom}/plugins/zsh-bat
         git clone https://github.com/gretzky/auto-color-ls ${ZSH_CUSTOM:-$USER_HOME/.oh-my-zsh/custom}/plugins/auto-color-ls
         git clone https://github.com/TamCore/autoupdate-oh-my-zsh-plugins ${ZSH_CUSTOM:-$USER_HOME/.oh-my-zsh/custom}/plugins/autoupdate
@@ -492,19 +493,13 @@ fi
 if [ "$INSTALL_GIT" = true ]; then
     colorize main "Install: Git Configuration"
 
-    # Fetch Username and email from gh if not provided
-    if [ -z "$GIT_USERNAME" ] || [ -z "$GIT_EMAIL" ]; then
-
-        # Check gh login status
+    # Check gh login status (only if $INSTALL_GH = true)
+    if [ "$INSTALL_GH" = true ]; then
         if ! gh auth status &>/dev/null; then
             colorize warning "GitHub CLI is not configured."
-            colorize info "Git configuration will use default settings."
             colorize info "Please reconfigure git manually with the following commands:"
             colorize log "    Git Username : git config --global user.name <github username>"
             colorize log "    Git Email    : git config --global user.email <github email>"
-
-            GIT_USERNAME="$(whoami)"
-            GIT_EMAIL="$(whoami)@$HOSTNAME"
         else
             colorize info "Fetching GitHub credentials..."
 
@@ -524,12 +519,13 @@ if [ "$INSTALL_GIT" = true ]; then
                 GIT_EMAIL="$GH_EMAIL"
             fi
         fi
-
     fi
 
-    # Configure Git with provided or fetched credentials
-    git config --global user.name "$GIT_USERNAME"
-    git config --global user.email "$GIT_EMAIL"
+    # Set user.name and user.email if provided
+    if [ -z "$GIT_USERNAME" ] || [ -z "$GIT_EMAIL" ]; then
+        git config --global user.name "$GIT_USERNAME"
+        git config --global user.email "$GIT_EMAIL"
+    fi
 
     # Configure Git for GitHub Verified Commit
     git config --global gpg.format ssh
