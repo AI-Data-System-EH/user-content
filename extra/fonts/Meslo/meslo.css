@@ -1,0 +1,34 @@
+/* https://github.com/ryanoasis/nerd-fonts/tree/master/patched-fonts/Meslo/S */
+/* Version 1.210; Nerd Fonts 3.3.0 */
+
+@font-face {
+    font-family: "MesloLGS Nerd Font";
+    font-style: normal;
+    font-weight: normal;
+    src: url("https://raw.githubusercontent.com/AI-Data-system-EH/user-content/main/extra/fonts/Meslo/MesloLGSNerdFont-Regular.ttf")
+        format("truetype");
+}
+
+@font-face {
+    font-family: "MesloLGS Nerd Font";
+    font-style: italic;
+    font-weight: normal;
+    src: url("https://raw.githubusercontent.com/AI-Data-system-EH/user-content/main/extra/fonts/Meslo/MesloLGSNerdFont-Italic.ttf")
+        format("truetype");
+}
+
+@font-face {
+    font-family: "MesloLGS Nerd Font";
+    font-style: normal;
+    font-weight: bold;
+    src: url("https://raw.githubusercontent.com/AI-Data-system-EH/user-content/main/extra/fonts/Meslo/MesloLGSNerdFont-Bold.ttf")
+        format("truetype");
+}
+
+@font-face {
+    font-family: "MesloLGS Nerd Font";
+    font-style: italic;
+    font-weight: bold;
+    src: url("https://raw.githubusercontent.com/AI-Data-system-EH/user-content/main/extra/fonts/Meslo/MesloLGSNerdFont-BoldItalic.ttf")
+        format("truetype");
+}

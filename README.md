@@ -1,30 +1,43 @@
 # user-content
 
-## Base URL
+_This repository contains static user content such as configuration files, install scripts, fonts and more._
 
-```bash
-https://raw.githubusercontent.com/AI-Data-system-EH/user-content/main/<content_path>
-```
+<br/>
 
-## Usage
+## :gem: Base URL
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/AI-Data-system-EH/user-content/main/<content_path> -o <destination_path>
-```
+`https://raw.githubusercontent.com/AI-Data-system-EH/user-content/main/<content_path>`
 
-## .zshrc
+### Usage
+
+`curl -fsSL https://raw.githubusercontent.com/AI-Data-system-EH/user-content/main/<content_path> -o <destination_path>`
+
+## :coffee: ZSH
+
+### .zshrc (Oh My Zsh)
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/AI-Data-system-EH/user-content/main/zsh/.zshrc -o ~/.zshrc
 ```
 
-## .p10k.zsh
+### .p10k.zsh (Powerlevel10k)
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/AI-Data-system-EH/user-content/main/zsh/.p10k.zsh -o ~/.p10k.zsh
 ```
 
-## motd
+## :cake: Fonts
+
+### [Meslo](./extra/fonts/Meslo/README.md)
+
+```bash
+# CSS style sheet URL
+https://raw.githubusercontent.com/AI-Data-system-EH/user-content/main/extra/fonts/Meslo/meslo.css
+```
+
+## :cookie: Extra
+
+### motd (Message of the Day)
 
 ```bash
 sudo curl -fsSL https://raw.githubusercontent.com/AI-Data-system-EH/user-content/main/extra/motd -o /etc/motd
